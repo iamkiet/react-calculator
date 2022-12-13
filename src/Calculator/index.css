@@ -1,0 +1,31 @@
+#calculator {
+  width: 300px;
+}
+
+.calculator-header {
+  background-color: #6b5b95;
+  color: white;
+}
+
+.calculator-body {
+  border: 1px solid #6b5b95;
+}
+
+.calculator-col {
+  text-align: center;
+}
+
+.calculator-display {
+  text-align: right;
+  margin: 10px 0px;
+}
+
+.item {
+  width: 100%;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.action-item {
+  background-color: orange;
+}
