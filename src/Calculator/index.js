@@ -18,6 +18,8 @@ const Calculator = () => {
   const onClearClick = () => {
     setCurNumber(0);
     setDisplayValue(0);
+    setCurAction("");
+    setToggleAction("");
   };
 
   const onNumberClick = (number) => {
@@ -56,7 +58,7 @@ const Calculator = () => {
       return;
     }
     const operator = operatorMapping[curAction];
-    const displayValue = eval(`${curNumber} ${operator} ${prevNumber}`);
+    const displayValue = eval(`${prevNumber} ${operator} ${curNumber}`);
     setDisplayValue(displayValue);
     setCurAction("");
     setToggleAction("");
