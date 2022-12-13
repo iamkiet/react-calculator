@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Row, Typography } from "antd";
-import usePrevious from "../hooks/usePrevious";
 import { OPERATOR, operatorMapping } from "./logic";
 import { ActionButton } from "../style";
 import "./index.css";
@@ -8,49 +7,53 @@ import "./index.css";
 const { Title } = Typography;
 
 const Calculator = () => {
-  const [displayValue, setDisplayValue] = useState(0);
-  const [curNumber, setCurNumber] = useState(0);
+  const [curInput, setCurInput] = useState("");
+  const [prevInput, setPrevInput] = useState("");
   const [curAction, setCurAction] = useState("");
   const [toggleAction, setToggleAction] = useState("");
-  const [isDecimalMode, setIsDecimalMode] = useState(false);
-  const prevNumber = usePrevious(curNumber);
+  const [displayValue, setDisplayValue] = useState(0);
 
-  const onClearClick = () => {
-    setCurNumber(0);
-    setDisplayValue(0);
+  const overThresholdNumber = (value) => {
+    const threshold = 10;
+    if (value.length > threshold) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const resetInfo = () => {
+    setPrevInput("");
+    setCurInput("");
     setCurAction("");
     setToggleAction("");
   };
 
-  const onNumberClick = (number) => {
-    if (curAction !== "") {
-      setCurNumber(number);
-      setDisplayValue(number);
+  const onClearClick = () => {
+    setDisplayValue(0);
+    resetInfo();
+  };
+
+  const onNumberClick = (value) => {
+    const newInput = curInput + value;
+    if (overThresholdNumber(newInput)) {
       return;
     }
-    if (isDecimalMode) {
-      const newNumber = Number(curNumber + "." + number);
-      setCurNumber(newNumber);
-      setDisplayValue(newNumber);
-      setIsDecimalMode(false);
-      return;
-    }
-    const newNumber = Number(curNumber + "" + number);
-    setCurNumber(newNumber);
-    setDisplayValue(newNumber);
-    setToggleAction("");
+    setCurInput(newInput);
+    setDisplayValue(newInput);
   };
 
   const onOperatorClick = (action) => {
-    setCurNumber(displayValue);
+    setPrevInput(curInput);
+    setCurInput("");
     setCurAction(action);
     setToggleAction(action);
   };
 
   const onDelClick = () => {
-    const newNumber = Math.trunc(curNumber / 10);
-    setCurNumber(newNumber);
-    setDisplayValue(newNumber);
+    const newInput = String(Math.trunc(Number(curInput) / 10));
+    setCurInput(newInput);
+    setDisplayValue(newInput);
   };
 
   const onCalculate = () => {
@@ -58,10 +61,9 @@ const Calculator = () => {
       return;
     }
     const operator = operatorMapping[curAction];
-    const displayValue = eval(`${prevNumber} ${operator} ${curNumber}`);
+    const displayValue = eval(`${prevInput}${operator}${curInput}`);
     setDisplayValue(displayValue);
-    setCurAction("");
-    setToggleAction("");
+    resetInfo();
   };
 
   return (
@@ -186,7 +188,7 @@ const Calculator = () => {
           </Button>
         </Col>
         <Col span={6} className="calculator-col">
-          <Button className="item" onClick={() => setIsDecimalMode(true)}>
+          <Button className="item" onClick={() => onNumberClick(".")}>
             .
           </Button>
         </Col>
